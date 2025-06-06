@@ -54,3 +54,9 @@
 - используем Clean architecture с DDD принципами
 - для rest api, работы с файлами и бд возьмем symfony
 - для отправки http запросов будем использовать guzzle
+
+## Запуск проекта
+
+```bash
+./docker-build.sh
+```

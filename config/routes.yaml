@@ -1,0 +1,5 @@
+controllers:
+    resource:
+        path: ../src/Infrastructure/Controller/
+        namespace: Pasha234\HwArchitecture\Infrastructure\Controller
+    type: attribute

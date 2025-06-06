@@ -1,0 +1,53 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    public_reports_filesystem_path: "%kernel.project_dir%/public/reports"
+    public_reports_url_path: "/reports/"
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    Pasha234\HwArchitecture\:
+        resource: "../src/"
+        exclude:
+            - "../src/DependencyInjection/"
+            - "../src/Domain/Entity/" # Entities are usually not services
+            - "../src/Domain/ValueObject/" # Value Objects are usually not services
+            - "../src/Kernel.php"
+
+    Pasha234\HwArchitecture\Domain\Report\ReportGeneratorInterface:
+        alias: Pasha234\HwArchitecture\Infrastructure\Report\HtmlReportGenerator
+
+    GuzzleHttp\ClientInterface:
+        class: GuzzleHttp\Client
+
+    Pasha234\HwArchitecture\Domain\Port\NewsHttpClient:
+        alias: Pasha234\HwArchitecture\Infrastructure\Http\GuzzleNewsClient
+
+    Pasha234\HwArchitecture\Infrastructure\Report\HtmlReportGenerator:
+        arguments:
+            $filesystem: '@Symfony\Component\Filesystem\Filesystem'
+            $publicReportsFilesystemPath: "%public_reports_filesystem_path%"
+            $publicReportsUrlPath: "%public_reports_url_path%"
+
+    # # Your controllers
+    # Pasha234\HwArchitecture\Infrastructure\Controller\:
+    #     resource: "../src/Infrastructure/Controller/"
+    #     tags: ["controller.service_arguments"]
+
+    # # Your application use cases
+    # Pasha234\HwArchitecture\Application\UseCase\:
+    #     resource: "../src/Application/UseCase/"
+    #     # If use cases are invokable and you want to tag them for a messenger bus, for example:
+    #     # tags: ['messenger.message_handler']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

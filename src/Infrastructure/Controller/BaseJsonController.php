@@ -19,7 +19,6 @@ class BaseJsonController extends AbstractController
         } catch (\RuntimeException $e) {
             return new JsonResponse(['error' => 'Report generation failed: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
-            dd($e);
             return new JsonResponse(['error' => 'An unexpected error occurred.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

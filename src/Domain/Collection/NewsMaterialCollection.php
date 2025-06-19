@@ -21,11 +21,6 @@ class NewsMaterialCollection implements IteratorAggregate, Countable
 
     public static function fromArray(array $items): self
     {
-        foreach ($items as $item) {
-            if (!$item instanceof NewsMaterial) {
-                throw new InvalidArgumentException('All items in NewsMaterialCollection must be instances of NewsMaterial.');
-            }
-        }
         return new self(...$items);
     }
 

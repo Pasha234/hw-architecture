@@ -8,6 +8,7 @@ use Pasha234\HwArchitecture\Domain\Collection\NewsMaterialCollection;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Pasha234\HwArchitecture\Domain\Entity\NewsMaterial as EntityNewsMaterial;
 use Pasha234\HwArchitecture\Domain\Repository\NewsRepositoryInterface;
+use ReflectionClass;
 use Pasha234\HwArchitecture\Infrastructure\Entity\NewsMaterialMapper;
 
 class PostgreNewsRepository extends ServiceEntityRepository implements NewsRepositoryInterface
@@ -44,7 +45,10 @@ class PostgreNewsRepository extends ServiceEntityRepository implements NewsRepos
         $this->getEntityManager()->persist($infrastructureNewsMaterial);
         $this->getEntityManager()->flush();
 
-        $domainNewsMaterial->setId($infrastructureNewsMaterial->id);
+        $reflectionClass = new ReflectionClass($domainNewsMaterial);
+        $idProperty = $reflectionClass->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($domainNewsMaterial, $infrastructureNewsMaterial->id);
     }
 
     public function all(): NewsMaterialCollection

@@ -2,7 +2,7 @@
 
 namespace Pasha234\HwArchitecture\Application\UseCase;
 
-use Pasha234\HwArchitecture\Domain\Collection\NewsMaterialCollection;
+use Pasha234\HwArchitecture\Application\DTO\Response\GetNewsResponseDto;
 use Pasha234\HwArchitecture\Domain\Repository\NewsRepositoryInterface;
 
 class GetNews
@@ -12,8 +12,18 @@ class GetNews
     )
     {}
 
-    public function execute(): NewsMaterialCollection
+    /**
+     * @return array<GetNewsResponseDto>
+     */
+    public function execute(): array
     {
-        return $this->newsRepository->all();
+        $news = $this->newsRepository->all();
+
+        $newsDtos = [];
+        foreach ($news as $newsMaterial) {
+            $newsDtos[] = GetNewsResponseDto::fromDomain($newsMaterial);
+        }
+
+        return $newsDtos;
     }
 }

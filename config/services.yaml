@@ -29,7 +29,7 @@ services:
     GuzzleHttp\ClientInterface:
         class: GuzzleHttp\Client
 
-    Pasha234\HwArchitecture\Domain\Port\NewsHttpClient:
+    Pasha234\HwArchitecture\Application\Port\NewsHttpClient:
         alias: Pasha234\HwArchitecture\Infrastructure\Http\GuzzleNewsClient
 
     Pasha234\HwArchitecture\Infrastructure\Report\HtmlReportGenerator:

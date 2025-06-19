@@ -5,6 +5,7 @@ namespace Pasha234\HwArchitecture\Infrastructure\Report;
 use Symfony\Component\Filesystem\Filesystem;
 use Pasha234\HwArchitecture\Domain\Report\ReportGeneratorInterface;
 use Pasha234\HwArchitecture\Domain\Collection\NewsMaterialCollection;
+use Pasha234\HwArchitecture\Domain\DTO\ReportGenerator\ResponseDto;
 use Pasha234\HwArchitecture\Infrastructure\Service\UrlGeneratorService;
 
 class HtmlReportGenerator implements ReportGeneratorInterface
@@ -28,12 +29,12 @@ class HtmlReportGenerator implements ReportGeneratorInterface
         $this->urlGenerator = $urlGenerator;
     }
 
-    public function generate(NewsMaterialCollection $news): string
+    public function generate(array $news): ResponseDto
     {
         $reportContent = "<ul>\n";
 
         foreach ($news as $newsMaterial) {
-            $reportContent .= "\t<li><a href=\"{$newsMaterial->getUrl()->get()}\">{$newsMaterial->getTitle()}</a></li>\n";
+            $reportContent .= "\t<li><a href=\"{$newsMaterial->getUrl()}\">{$newsMaterial->getTitle()}</a></li>\n";
         }
 
         $reportContent .= "</ul>";
@@ -45,6 +46,8 @@ class HtmlReportGenerator implements ReportGeneratorInterface
 
         $relativeUrl = rtrim($this->publicReportsUrlPath, '/') . '/' . ltrim($fileName, '/');
         
-        return $this->urlGenerator->generateAbsoluteUrlForPath($relativeUrl);
+        return new ResponseDto(
+            $this->urlGenerator->generateAbsoluteUrlForPath($relativeUrl)
+        );
     }
 }

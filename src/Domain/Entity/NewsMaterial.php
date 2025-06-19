@@ -49,9 +49,4 @@ class NewsMaterial
     {
         $this->title = $title;
     }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
 }

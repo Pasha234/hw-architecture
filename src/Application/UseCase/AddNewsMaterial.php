@@ -2,24 +2,31 @@
 
 namespace Pasha234\HwArchitecture\Application\UseCase;
 
+use Pasha234\HwArchitecture\Application\DTO\NewsHttpClient\GetTitleRequestDto;
+use Pasha234\HwArchitecture\Application\DTO\Request\AddNewsMaterialRequestDto;
+use Pasha234\HwArchitecture\Application\DTO\Response\AddNewsMaterialResponseDto;
 use Pasha234\HwArchitecture\Domain\Entity\NewsMaterial;
+use Pasha234\HwArchitecture\Application\Port\NewsHttpClient;
 use Pasha234\HwArchitecture\Domain\Repository\NewsRepositoryInterface;
-use Pasha234\HwArchitecture\Domain\Service\NewsService;
 
 class AddNewsMaterial
 {
     public function __construct(
         private NewsRepositoryInterface $newsRepository,
-        private NewsService $newsService
+        private NewsHttpClient $newsHttpClient,
     )
     {}
 
-    public function execute(string $url): int
+    public function execute(AddNewsMaterialRequestDto $addNewsMaterialRequestDto): AddNewsMaterialResponseDto
     {
-        $newsMaterial = NewsMaterial::fromUrl($url);
-        $this->newsService->getTitleForNewsMaterial($newsMaterial);
+        $newsMaterial = NewsMaterial::fromUrl($addNewsMaterialRequestDto->getUrl());
+        $newsMaterial->setTitle($this->newsHttpClient->getTitle(
+            new GetTitleRequestDto($newsMaterial->getUrl()->get())
+        ));
         $this->newsRepository->save($newsMaterial);
 
-        return $newsMaterial->getId();
+        return new AddNewsMaterialResponseDto(
+            $newsMaterial->getId()
+        );
     }
 }

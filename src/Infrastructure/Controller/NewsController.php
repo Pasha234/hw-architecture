@@ -2,6 +2,8 @@
 
 namespace Pasha234\HwArchitecture\Infrastructure\Controller;
 
+use Pasha234\HwArchitecture\Application\DTO\Request\AddNewsMaterialRequestDto;
+use Pasha234\HwArchitecture\Application\DTO\Request\GenerateReportRequestDto;
 use Pasha234\HwArchitecture\Application\UseCase\AddNewsMaterial;
 use Pasha234\HwArchitecture\Application\UseCase\GenerateReport;
 use Pasha234\HwArchitecture\Application\UseCase\GetNews;
@@ -9,15 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Pasha234\HwArchitecture\Domain\Service\NewsService;
 use Pasha234\HwArchitecture\Infrastructure\Dto\NewsItemDto;
 
 class NewsController extends BaseJsonController
 {
-    public function __construct(
-        private NewsService $newsService
-    ) {}
-
     #[Route('/api/news/report', name: 'api_news_report_generate', methods: ['POST'])]
     public function generateReport(Request $request, GenerateReport $generateReport): JsonResponse
     {
@@ -42,9 +39,11 @@ class NewsController extends BaseJsonController
                 }
             }
     
-            $reportLink = $generateReport->execute($ids);
+            $response = $generateReport->execute(new GenerateReportRequestDto(
+                $ids
+            ));
 
-            return new JsonResponse(['report_link' => $reportLink], Response::HTTP_OK);
+            return new JsonResponse(['report_link' => $response->getUrl()], Response::HTTP_OK);
             
         });
     }
@@ -53,12 +52,7 @@ class NewsController extends BaseJsonController
     public function getAllNews(GetNews $getNews): JsonResponse
     {
         return $this->handleRequest(function() use ($getNews) {
-            $news = $getNews->execute();
-
-            $newsDtos = [];
-            foreach ($news as $newsMaterial) {
-                $newsDtos[] = NewsItemDto::fromDomain($newsMaterial);
-            }
+            $newsDtos = $getNews->execute();
 
             return new JsonResponse($newsDtos, Response::HTTP_OK);
         });
@@ -79,9 +73,11 @@ class NewsController extends BaseJsonController
                 );
             }
 
-            $id = $addNewsMaterial->execute($url);
+            $response = $addNewsMaterial->execute(new AddNewsMaterialRequestDto(
+                $url
+            ));
 
-            return new JsonResponse(['id' => $id], Response::HTTP_CREATED);
+            return new JsonResponse(['id' => $response->getId()], Response::HTTP_CREATED);
         });
     }
 }

@@ -4,9 +4,8 @@ namespace Pasha234\HwArchitecture\Infrastructure\Http;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use Pasha234\HwArchitecture\Domain\Port\NewsHttpClient;
-use Pasha234\HwArchitecture\Domain\ValueObject\Url;
-use Psr\Http\Message\ResponseInterface;
+use Pasha234\HwArchitecture\Application\DTO\NewsHttpClient\GetTitleRequestDto;
+use Pasha234\HwArchitecture\Application\Port\NewsHttpClient;
 
 class GuzzleNewsClient implements NewsHttpClient
 {
@@ -17,14 +16,14 @@ class GuzzleNewsClient implements NewsHttpClient
         $this->httpClient = $httpClient;
     }
 
-    public function getTitle(Url $url): string
+    public function getTitle(GetTitleRequestDto $getTitleRequestDto): string
     {
         try {
-            $response = $this->httpClient->request('GET', $url->get());
+            $response = $this->httpClient->request('GET', $getTitleRequestDto->getUrl());
 
             if ($response->getStatusCode() !== 200) {
                 // Or throw a more specific domain exception
-                throw new \RuntimeException("Failed to fetch URL: {$url->get()}, Status code: {$response->getStatusCode()}");
+                throw new \RuntimeException("Failed to fetch URL: {$getTitleRequestDto->getUrl()}, Status code: {$response->getStatusCode()}");
             }
 
             return $this->extractTitleFromHtml($response->getBody()->getContents());
@@ -32,10 +31,10 @@ class GuzzleNewsClient implements NewsHttpClient
         } catch (RequestException $e) {
             // Log the error: $e->getMessage()
             // Or throw a more specific domain exception
-            throw new \RuntimeException("Error fetching title for URL: {$url->get()}: " . $e->getMessage(), 0, $e);
+            throw new \RuntimeException("Error fetching title for URL: {$getTitleRequestDto->getUrl()}: " . $e->getMessage(), 0, $e);
         } catch (\Exception $e) {
             // Catch any other unexpected errors during title extraction or processing
-            throw new \RuntimeException("Unexpected error processing URL: {$url->get()}: " . $e->getMessage(), 0, $e);
+            throw new \RuntimeException("Unexpected error processing URL: {$getTitleRequestDto->getUrl()}: " . $e->getMessage(), 0, $e);
         }
     }
 
